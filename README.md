@@ -6,15 +6,15 @@ Python wrapper to run phylogenetic placement of reads
 
 ### conda
 
-pplacer
-magicblast
-muscle
-fasttree
-mafft
+* pplacer
+* magicblast
+* muscle
+* fasttree
+* mafft
 
 ### pip
 
-taxtastic
+* taxtastic
 
 ## Usage
 
