@@ -26,3 +26,7 @@ python3 phylomap_main.py [build, af, place, viz] [options]
 * viz is under development and doesn't currently work. For now, the best thing to do is to go to ItoL (https://itol.embl.de/upload.cgi) and upload the jplace file there to visualize results.
 
 Currently nucleotide only. Protein support likely to be added at later point.
+
+## Notes on jplace
+
+https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0031009
