@@ -15,6 +15,7 @@ Python wrapper to run phylogenetic placement of reads
 ### pip
 
 * taxtastic
+* python-circos==0.3.0
 
 ## Usage
 
