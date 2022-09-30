@@ -7,7 +7,7 @@ Sequencing data can be used to assemble genomes, detect the presence of, quantif
 
 Phylogenetic read placement approaches seek to more sensitively reflect the information within genomic fragments. By creating a reference phylogenetic tree, the specific locations at which the genomic sequences of related species begin to diverge can be identified. By subsequently mapping a read onto a phylogeny, a read can be assigned to a particular location within the tree, thus (hopefully) identifying the read as belonging to a specific genome or as being more distantly related to several reference genomes (i.e. coming from a common ancestor).
 
-In brief, phylomap exists because the current best-in-class phylogenetic mapping approaches (pplacer, RAxML) are either relatively slow (in the case of RAxML's accurate approachr), relatively inaccurate (in the case of RAxML's faster approach) or prohibitively clunky (in the case of pplacer). Phylomap opts for speed and accuracy by employing pplacer - albeit at the cost of RAM efficiency and seeks to turn the many quite involved steps of running a pplacer workflow into 2 or 3 very simple ones.
+In brief, phylomap exists because the current best-in-class phylogenetic mapping approaches (pplacer, RAxML) are either relatively slow (in the case of RAxML's accurate approach), relatively inaccurate (in the case of RAxML's faster approach) or prohibitively clunky (in the case of pplacer). Phylomap opts for speed and accuracy by employing pplacer - albeit at the cost of RAM efficiency - and seeks to turn the many quite involved steps of running a pplacer workflow into 2 or 3 very simple ones involving only a set of sequences and some reads.
 
 ## Requires
 
