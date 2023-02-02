@@ -42,8 +42,10 @@ class phyl_builder:
 			print("Skipping.")
 			
 	def make_ma(self):
-		muscle_ma_command = ["muscle", "-in", self.combined_genomes, "-out", self.mult_aln]
+		#This might be a version thing
+		muscle_ma_command = ["muscle", "-align", self.combined_genomes, "-output", self.mult_aln]
 		muscle_ma_command = " ".join(muscle_ma_command)
+		#print(muscle_ma_command)
 		os.system(muscle_ma_command)
 		
 	def make_tree(self):

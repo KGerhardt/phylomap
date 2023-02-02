@@ -49,11 +49,16 @@ def do_align_and_filter(args):
 		
 		filtered_reads.close()
 	
-	mafft_comm = "mafft --quiet --add {combined_reads} --reorder {orig_ma} > {out}"
-	mafft_comm = mafft_comm.format(combined_reads=filt_name, orig_ma = reference_multiple_aln, out = ma_name)
-	os.system(mafft_comm)
-	
-	
+		mafft_comm = "mafft --quiet --add {combined_reads} --reorder {orig_ma} > {out}"
+		mafft_comm = mafft_comm.format(combined_reads=filt_name, orig_ma = reference_multiple_aln, out = ma_name)
+		#print("")
+		#print(mafft_comm)
+		#print("")
+		os.system(mafft_comm)
+	else:
+		print("")
+		print("No passing reads found for file:", read + ".", "This file will have no placements and no output in filtered_reads or ma_reads.")
+		print("")
 	
 class phylomap_af:
 	def __init__(self, reads, target, threads = 1, type = "nucl", pct_id = 85, aligned_frac = 90):

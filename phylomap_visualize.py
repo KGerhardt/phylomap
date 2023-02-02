@@ -30,7 +30,34 @@ class jplace_plotter:
 		self.placements_by_node = None
 		self.counts_by_node = None
 		
-	def read_jplace(self):
+	def itolize_jplace(self):
+		for j in [self.jp]:
+			fh = open(j, "r")
+			jp = json.load(fh)
+			fh.close()
+			
+			#We're duplicating placement info to map each placement set onto just one read for ItoL
+			reconfigured_placements = []
+			for placement in jp["placements"]:
+				if "nm" in placement:
+					for read in placement['nm']:
+						next_placement = {"p":placement['p'], "nm":[read]}
+						reconfigured_placements.append(next_placement)
+				elif "n" in placement:
+					for read in placement['n']:
+						next_placement = {"p":placement['p'], "n":[read]}
+						reconfigured_placements.append(next_placement)
+	
+			jp["placements"] = reconfigured_placements
+			
+			json_obj = json.dumps(jp, indent = 1)
+			
+			fh = open(j+"_reconfigured.jplace", "w")
+			fh.write(json_obj)
+			fh.close()
+
+		
+	def read_jplace(self):	
 		fh = open(self.jp, "r")
 		jp_data = json.load(fh)
 		fh.close()
@@ -48,33 +75,40 @@ class jplace_plotter:
 		self.placements_by_node = {}
 		self.counts_by_node = {}
 		
-		for placement in self.placements:
-			best_placement = placement['p'][0]
+		for placement_list in self.placements:
+			for placement in placement_list['p']:
+				node = best_placement[self.node_field]
+			
+				if node not in self.placements_by_node:
+					self.placements_by_node[node] = []
+					
+				if node not in self.counts_by_node:
+					self.counts_by_node[node] = 0
+					
+				if "nm" in placement_list_list:
+					for read in placement['nm']:
+						self.counts_by_node[node] += 1
+						self.placements_by_node[node].append(read[0])
 				
-			node = best_placement[self.node_field]
+				elif "n" in placement_list:
+					for read in placement_list['n']:
+						self.counts_by_node[node] += 1
+						self.placements_by_node[node].append(read[0])
 			
-			if node not in self.counts_by_node:
-				self.counts_by_node[node] = 0
-			self.counts_by_node[node] += 1
-			#This is just bookkeeping.
-			if node not in self.placements_by_node:
-				self.placements_by_node[node] = []
 			
-			#This is consistent for getting the best hit name,
-			read_name = placement['nm'][0][0]
-			self.placements_by_node[node].append(read_name)	
-
 	def render_tree(self):
 		self.as_newick = re.sub("\{\d+\}", "", self.tree)
 		
 		self.tree_figure = ete3.Tree(self.as_newick)
 		
 		print(self.tree_figure)
-		#print(dir(self.tree_figure))
 		
-		#self.tree_figure.show()
+		tot = 0
+		for i in range(0, len(self.counts_by_node)):
+			print("node", i, self.counts_by_node[i])
+			tot += self.counts_by_node[i]
+		print("tot", tot)
 		
-		self.tree_figure.render("example.svg")
 			
 	
 class jplace_visualizer:
@@ -110,10 +144,9 @@ class jplace_visualizer:
 		#we'll pool this later.
 		for j, n, v in zip(self.jp, self.names, self.viznames):
 			plotter = jplace_plotter(j, n, v)
+			#plotter.itolize_jplace()
 			plotter.read_jplace()
-			plotter.render_tree()
-
-		
+			#plotter.render_tree()
 
 		
 def phylomap_viz():

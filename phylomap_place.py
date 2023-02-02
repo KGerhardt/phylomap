@@ -5,6 +5,8 @@ from options import place_opts
 import sys
 import os
 
+import json
+
 
 class pplacer_operator:
 	def __init__(self, targ_dir, threads = 1, max_placements = 1):
@@ -13,6 +15,7 @@ class pplacer_operator:
 		self.refpak = None
 		self.jplaces = []
 		self.jplace_tsvs = []
+		#self.itol_friendly = []
 		self.threads = threads
 		self.max_place = max_placements
 		
@@ -43,6 +46,7 @@ class pplacer_operator:
 			
 	def prep_outputs(self):
 		self.make_dir("pplacer_jplace")
+		#self.make_dir("itol_friendly_jplace")
 		self.make_dir("pplacer_tsv")
 		for r in self.reads:
 			name = os.path.basename(r)
@@ -50,8 +54,36 @@ class pplacer_operator:
 				name = os.path.splitext(name)[0]
 			jp_name = os.path.normpath(self.outpath + "/pplacer_jplace/"+name + ".jplace")
 			tsv_name = os.path.normpath(self.outpath + "/pplacer_tsv/"+name + ".tsv")
+			#friendly_name = os.path.normpath(self.outpath + "/itol_friendly_jplace/"+name + ".ItoL.jplace")
 			self.jplaces.append(jp_name)
 			self.jplace_tsvs.append(tsv_name)
+			#self.itol_friendly.append(friendly_name)
+		
+	def itolize_jplace(self):
+		for j, i in zip(self.jplaces, self.itol_friendly):
+			fh = open(j, "r")
+			jp = json.load(fh)
+			fh.close()
+			
+			#We're duplicating placement info to map each placement set onto just one read for ItoL
+			reconfigured_placements = []
+			for placement in jp["placements"]:
+				if "nm" in placement:
+					for read in placement['nm']:
+						next_placement = {"p":placement['p'], "nm":[read]}
+						reconfigured_placements.append(next_placement)
+				elif "n" in placement:
+					for read in placement['n']:
+						next_placement = {"p":placement['p'], "n":[read]}
+						reconfigured_placements.append(next_placement)
+	
+			jp["placements"] = reconfigured_placements
+			
+			json_obj = json.dumps(jp, indent = 1)
+			
+			fh = open(i, "w")
+			fh.write(json_obj)
+			fh.close()
 		
 	def run_place(self):
 		self.locate_refpak()
@@ -67,7 +99,7 @@ class pplacer_operator:
 		self.prep_outputs()
 		
 		for r, j, t in zip(self.reads, self.jplaces, self.jplace_tsvs):
-			pplacer_arg = "pplacer -c {refpkg} -o {out} {reads_aln} -j {thds} --keep-at-most {place_count}"
+			pplacer_arg = "pplacer --discard-nonoverlapped -c {refpkg} -o {out} {reads_aln} -j {thds} --keep-at-most {place_count}"
 			pplacer_arg = pplacer_arg.format(refpkg = self.refpak, out=j, reads_aln=r, thds = self.threads, place_count = self.max_place)
 			os.system(pplacer_arg)
 			
@@ -79,9 +111,9 @@ class pplacer_operator:
 				swap.write(line)
 			swap.close()
 			os.remove(t+"_temp.csv")
-	
-
-
+		
+		#ItoL corrected their jplace parser with my help; this is no longer needed.
+		#self.itolize_jplace()
 
 def phylomap_place():
 	parser, opts = place_opts()
