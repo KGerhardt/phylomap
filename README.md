@@ -18,7 +18,6 @@ phylomap exists because the current best-in-class phylogenetic mapping approache
 ### pip
 
 * taxtastic
-* python-circos==0.3.0
 
 ## Usage
 
